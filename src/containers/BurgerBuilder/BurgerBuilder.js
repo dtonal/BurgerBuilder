@@ -5,7 +5,12 @@ class BurgerBuilder extends Component {
     constructor(props){
         super(props);
         this.state = {
-            ingredients: [],
+            ingredients: {
+                salad: 0,
+                bacon: 0,
+                cheese: 0,
+                meat: 0
+            },
             purchased: false,
             totalPrice: 0.00
         }
@@ -15,7 +20,7 @@ class BurgerBuilder extends Component {
     render() {
       return (
         <>
-            <Burger/>
+            <Burger ingredients = {this.state.ingredients}/>
             <div>Controls</div>
         </>
       );
