@@ -17,12 +17,32 @@ class BurgerBuilder extends Component {
         }
     }
 
-
     render() {
+      const addIngredientHandler = (ingredient) => {
+          var ingredients = this.state.ingredients;
+          ingredients[ingredient]++;
+          this.setState({
+              ingredients: ingredients
+          });
+      };
+
+      const removeIngredientHandler = (ingredient) => {
+          var ingredients = this.state.ingredients;
+          if( ingredients[ingredient] > 0) {
+            ingredients[ingredient]--;
+          }
+          this.setState({
+              ingredients: ingredients
+          });
+      };
+
       return (
         <>
             <Burger ingredients = {this.state.ingredients}/>
-            <BuildControls/>
+            <BuildControls 
+                addIngredientHandler={addIngredientHandler}
+                removeIngredientHandler={removeIngredientHandler}
+                />
         </>
       );
     }
