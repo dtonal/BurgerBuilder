@@ -16,11 +16,13 @@ const buildControls = (props) => {
        label={key.label} 
        key={key.label+index} 
        addIngredientHandler={()=>props.addIngredientHandler(key.type)}
-       removeIngredientHandler={()=>props.removeIngredientHandler(key.type)}/>
+       removeIngredientHandler={()=>props.removeIngredientHandler(key.type)}
+       disableRemove={props.disabledInfo[key.type]}/>
     });
 
     return(
     <div className={classes.Control}>
+        <p>Current Price: {props.price}</p>
         {controlElements}
     </div>
     );
