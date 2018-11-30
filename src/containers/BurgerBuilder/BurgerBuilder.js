@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
+import Modal from '../../components/UI/Modal/Modal'
+import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
+
 
 const INGREDINT_PRICES = {
     salad: 0.5,
@@ -19,13 +22,28 @@ class BurgerBuilder extends Component {
                 cheese: 0,
                 meat: 0
             },
+            isValid: false,
             purchased: false,
-            totalPrice: 3.00
+            totalPrice: 3.00,
+            purchasing: false
         }
+    }
+
+    purchaseHandler = () => {
+        this.setState({
+            purchasing: true
+        })
     }
 
       getPriceForIngredient = (ingredientType) => {
         return INGREDINT_PRICES[ingredientType];
+      }
+
+      checkValidBurger = (ingredients) => {
+          return Object.keys(ingredients)
+          .map(key => ingredients[key])
+          .reduce((acc, current) => acc + current)
+          > 0;
       }
 
 
@@ -33,9 +51,11 @@ class BurgerBuilder extends Component {
           const ingredients = this.state.ingredients;
           const newPrice = this.state.totalPrice + this.getPriceForIngredient(ingredient);
           ingredients[ingredient]++;
+          const isValid = this.checkValidBurger(ingredients);
           this.setState({
               ingredients: ingredients,
-              totalPrice: newPrice
+              totalPrice: newPrice,
+              valid: isValid
           });
       };
 
@@ -44,9 +64,11 @@ class BurgerBuilder extends Component {
           if( ingredients[ingredient] > 0) {
             ingredients[ingredient]--;
             const newPrice = this.state.totalPrice - this.getPriceForIngredient(ingredient);
+            const isValid = this.checkValidBurger(ingredients);
             this.setState({
                 ingredients: ingredients,
-                totalPrice: newPrice
+                totalPrice: newPrice,
+                valid: isValid
             });
           }
       };
@@ -62,12 +84,17 @@ class BurgerBuilder extends Component {
 
       return (
         <>
+            <Modal show={this.state.purchasing}>
+                <OrderSummary ingredients={this.state.ingredients}/>
+            </Modal>
             <Burger ingredients = {this.state.ingredients}/>
             <BuildControls 
                 addIngredientHandler={this.addIngredientHandler}
                 removeIngredientHandler={this.removeIngredientHandler}
                 disabledInfo={disabledInfo}
                 price={this.state.totalPrice.toFixed(2)}
+                validBurger={this.state.valid}
+                purchaseHandler={this.purchaseHandler}
                 />
         </>
       );

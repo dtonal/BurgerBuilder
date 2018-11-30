@@ -24,6 +24,10 @@ const buildControls = (props) => {
     <div className={classes.Control}>
         <p>Current Price: {props.price}</p>
         {controlElements}
+        <button 
+        className={classes.OrderButton} 
+        disabled={!props.validBurger}
+        onClick={props.purchaseHandler}>ORDER NOW</button>
     </div>
     );
 }
