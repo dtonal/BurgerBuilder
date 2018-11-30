@@ -73,6 +73,12 @@ class BurgerBuilder extends Component {
           }
       };
 
+      backHandler = () => {
+          this.setState({
+              purchasing: false
+          });
+      }
+
 
     render() {
         const disabledInfo={
@@ -84,7 +90,7 @@ class BurgerBuilder extends Component {
 
       return (
         <>
-            <Modal show={this.state.purchasing}>
+            <Modal show={this.state.purchasing} backHandler={this.backHandler}>
                 <OrderSummary ingredients={this.state.ingredients}/>
             </Modal>
             <Burger ingredients = {this.state.ingredients}/>
