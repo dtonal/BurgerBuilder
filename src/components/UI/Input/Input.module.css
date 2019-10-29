@@ -25,3 +25,8 @@
     outline: none;
     background-color: whitesmoke;
 }
+
+.Invalid {
+    border: solid 1px red;
+    background-color: lightcoral;   
+}
