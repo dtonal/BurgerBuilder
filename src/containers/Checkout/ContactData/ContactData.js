@@ -5,7 +5,8 @@ import classes from './ContactData.module.css';
 import axiosOrder from '../../../AxiosOrder';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
-
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
+import * as actions from '../../../store/actions/index';
 
 class ContactData extends Component {
     constructor(props) {
@@ -98,8 +99,6 @@ class ContactData extends Component {
 
     orderHandler = (event) => {
         event.preventDefault();
-        console.log(this.props.ings);
-        this.setState({ loading: true });
         const formData = {};
         for (let elId in this.state.orderForm) {
             formData[elId] = this.state.orderForm[elId].value;
@@ -109,15 +108,7 @@ class ContactData extends Component {
             price: this.props.price,
             orderData: formData
         };
-
-        axiosOrder.post('/orders.json', order)
-            .then(response => {
-                this.setState({ loading: false });
-                this.props.history.push('/');
-            })
-            .catch(error => {
-                this.setState({ loading: false });
-            })
+        this.props.onBurgerPurchase(order);
     }
 
     inputChangedHandler = (event, inputId) => {
@@ -181,7 +172,7 @@ class ContactData extends Component {
             </form>
         );
 
-        if (this.state.loading) {
+        if (this.props.loading) {
             form = <Spinner />
         }
 
@@ -194,11 +185,18 @@ class ContactData extends Component {
     }
 }
 
-const mapStateToProps = state => {
+const dispatchToProps = dispatch => {
     return {
-        ings: state.ingredients,
-        price: state.totalPrice
+        onBurgerPurchase: (orderData) => dispatch(actions.purchaseBurger(orderData))
     }
 }
 
-export default connect(mapStateToProps)(ContactData)
+const mapStateToProps = state => {
+    return {
+        ings: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+        loading: state.order.loading
+    }
+}
+
+export default connect(mapStateToProps, dispatchToProps)(withErrorHandler(ContactData, axiosOrder))
