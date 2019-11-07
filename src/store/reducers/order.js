@@ -1,4 +1,5 @@
 import * as actionTypes from '../actions/actionTypes';
+import { updateObject } from '../utility';
 
 const initState = {
     orders: [],
@@ -6,54 +7,55 @@ const initState = {
     purchased: false
 }
 
+const purchaseBurgerSuccess = (state, action) => {
+    const newOrder = updateObject(action.orderData, { id: action.orderId })
+    return updateObject(state, {
+        loading: false,
+        orders: state.orders.concat(newOrder),
+        purchased: true
+    })
+}
+
+const purchaseBurgerError = (state, action) => {
+    return updateObject(state, { loading: false })
+}
+
+const purchaseBurgerStarted = (state, action) => {
+    return updateObject(state, { loading: true })
+}
+
+const purchaseBurgerInit = (state, action) => {
+    return updateObject(state, { purchased: false });
+}
+
+const fetchOrderStart = (state, action) => {
+    return updateObject(state, { loading: true })
+}
+
+const fetchOrderSuccess = (state, action) => {
+    return updateObject(state, { orders: action.orders, loading: false })
+}
+
+const fetchOrderError = (state, action) => {
+    return updateObject(state, { error: action.error, loading: false })
+}
+
 const reducer = (state = initState, action) => {
     switch (action.type) {
         case actionTypes.PURCHASE_BURGER_SUCCESS:
-            const newOrder = { ...action.orderData, id: action.orderId }
-            return {
-                ...state,
-                loading: false,
-                orders: state.orders.concat(newOrder),
-                purchased: true
-            }
+            return purchaseBurgerSuccess(state, action)
         case actionTypes.PURCHASE_BURGER_ERROR:
-            return {
-                ...state,
-                loading: false,
-
-            }
+            return purchaseBurgerError(state, action);
         case actionTypes.PURCHASE_BURGER_STARTED:
-            return {
-                ...state,
-                loading: true
-            }
+            return purchaseBurgerStarted(state, action)
         case actionTypes.PURCHASE_BURGER_INIT:
-            return {
-                ...state,
-                purchased: false
-            }
+            return purchaseBurgerInit(state, action)
         case actionTypes.FETCH_ORDERS_START:
-            return {
-                ...state,
-                loading: true
-            }
+            return fetchOrderStart(state, action)
         case actionTypes.FETCH_ORDERS_SUCCESS:
-            return {
-                ...state,
-                orders: action.orders,
-                loading: false
-            }
+            return fetchOrderSuccess(state, action)
         case actionTypes.FETCH_ORDERS_ERROR:
-            return {
-                ...state,
-                error: action.error,
-                loading: false
-            }
-        case actionTypes.FETCH_ORDERS_INIT:
-            return {
-                ...state,
-                loading: false
-            }
+            return fetchOrderError(state, action)
 
         default:
             return state
