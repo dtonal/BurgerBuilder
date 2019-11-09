@@ -7,19 +7,19 @@ import classes from './SideDrawer.module.css'
 
 const sideDrawer = (props) => {
 
-    const sideDrawClasses = [classes.SideDrawer,props.sideDrawVisible?classes.Open: classes.Close].join(' ');
+    const sideDrawClasses = [classes.SideDrawer, props.sideDrawVisible ? classes.Open : classes.Close].join(' ');
 
     return (
         <>
-        <Backdrop backHandler={props.closed} show={props.sideDrawVisible}/>
-        <div className={sideDrawClasses.concat(' ')}>
-            <div className={classes.Logo}>
-                <Logo/>
+            <Backdrop backHandler={props.closed} show={props.sideDrawVisible} />
+            <div className={sideDrawClasses.concat(' ')} onClick={props.closed}>
+                <div className={classes.Logo}>
+                    <Logo />
+                </div>
+                <nav>
+                    <NavigationItems isAuthenticated={props.isAuthenticated} />
+                </nav>
             </div>
-            <nav>
-                <NavigationItems/>
-            </nav>
-        </div>
         </>
     );
 }

@@ -24,7 +24,6 @@ export const authFail = (error) => {
 
 export const auth = (email, password, isSignup) => {
     return dispatch => {
-        console.log("auth " + email + "/" + password);
         dispatch(authStart());
         let url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + apiKey
         if (!isSignup) {
@@ -37,7 +36,6 @@ export const auth = (email, password, isSignup) => {
         })
             .then(
                 response => {
-                    console.log(response);
                     localStorage.setItem('token', response.data.idToken)
                     localStorage.setItem('userId', response.data.localId)
                     const expirationDate = new Date(new Date().getTime() + response.data.expiresIn * 1000);
@@ -48,7 +46,6 @@ export const auth = (email, password, isSignup) => {
             )
             .catch(
                 error => {
-                    console.log(error);
                     dispatch(authFail(error.response.data.error))
                 });
     }
@@ -64,7 +61,6 @@ export const logout = () => {
 }
 
 export const setAuthRedirectPath = (path) => {
-    console.log('action: setAuthRedirectPath - ' + path);
     return {
         type: actionTypes.SET_AUTH_REDIRECT_PATH,
         path: path
@@ -84,8 +80,6 @@ export const authCheckState = () => {
     return dispatch => {
         const token = localStorage.getItem('token');
         const userId = localStorage.getItem('userId');
-        console.log('authCheckState.token: ' + token);
-        console.log('authCheckState.userId: ' + userId);
         if (!token || !userId) {
             dispatch(logout());
         } else {
