@@ -19,7 +19,8 @@ describe('auth reducer', () => {
             reducer(undefined,
                 {
                     type: actionTypes.AUTH_SUCCESS,
-                    token: 'token'
+                    token: 'token',
+                    userId: 'userId'
                 }
             ).token
         ).toEqual('token')
