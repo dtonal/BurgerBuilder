@@ -9,7 +9,7 @@ import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import * as burgerBuilderActions from '../../store/actions/index';
 
 import axiosOrder from '../../AxiosOrder';
-class BurgerBuilder extends Component {
+export class BurgerBuilder extends Component {
 
     constructor(props) {
         super(props);
