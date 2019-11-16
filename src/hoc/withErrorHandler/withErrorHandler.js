@@ -1,51 +1,42 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from '../../components/UI/Modal/Modal';
 
 
 const withErrorHandler = (WrappedComponent, axios) => {
-    return class extends Component{
-        state = {
-            error: null
-        }
+    return props => {
 
-        
+        const [error, setError] = useState(null);
 
-        componentWillMount(){
-            this.requestInterceptor = axios.interceptors.request.use(req => {
-                this.setState({error: null});
-                return req;
-            });
-            this.responseInterceptor = axios.interceptors.response.use( (response) => {
-                // Any status code that lie within the range of 2xx cause this function to trigger
-                // Do something with response data
-                return response;
-              },  (error) => {
-                // Any status codes that falls outside the range of 2xx cause this function to trigger
-                // Do something with response error
-                this.setState({error: error});
-                return Promise.reject(error);
-              });
-        }
+        const requestInterceptor = axios.interceptors.request.use(req => {
+            setError(null);
+            return req;
+        });
+        const responseInterceptor = axios.interceptors.response.use((response) => {
+            // Any status code that lie within the range of 2xx cause this function to trigger
+            // Do something with response data
+            return response;
+        }, (error) => {
+            // Any status codes that falls outside the range of 2xx cause this function to trigger
+            // Do something with response error
+            setError(error);
+            return Promise.reject(error);
+        });
 
-        componentWillUnmount(){
-            axios.interceptors.request.eject(this.requestInterceptor);
-            axios.interceptors.response.eject(this.responseInterceptor);
-        }
+        useEffect(() => {
+            return () => {
+                axios.interceptors.request.eject(requestInterceptor);
+                axios.interceptors.response.eject(responseInterceptor);
+            }
+        }, [requestInterceptor, responseInterceptor])
 
-        backHandler = () => {
-            this.setState({error: null});
-        }
-
-        render () {
-            return(
-                <>
-                    <Modal show={this.state.error} backHandler={this.backHandler}>
-                        {this.state.error ? this.state.error.message : null}
-                    </Modal>
-                    <WrappedComponent {...this.props}/> 
-                </>
-            );
-        }
+        return (
+            <>
+                <Modal show={error} backHandler={() => setError(null)}>
+                    {error ? error.message : null}
+                </Modal>
+                <WrappedComponent {...props} />
+            </>
+        );
     }
 }
 

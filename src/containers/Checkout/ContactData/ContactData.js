@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
 import Button from '../../../components/UI/Button/Button';
@@ -11,117 +11,113 @@ import { updateObject, checkValidty } from '../../../shared/utility';
 
 import classes from './ContactData.module.css';
 
-class ContactData extends Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            loading: false,
-            orderForm: {
-                name: {
-                    elementType: 'input',
-                    elementConfig: {
-                        type: 'text',
-                        placeholder: 'Your Name'
-                    },
-                    value: '',
-                    validation: { required: true },
-                    valid: false,
-                    touched: false
+const ContactData = props => {
+    const [formIsValid, setFormIsValid] = useState(false);
+    const [orderForm, setOrderForm] = useState(
+        {
+            name: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Your Name'
                 },
-                zipcode: {
-                    elementType: 'input',
-                    elementConfig: {
-                        type: 'text',
-                        placeholder: 'Your Zipcode'
-                    },
-                    value: '',
-                    validation: { required: true, minLength: 5, maxLength: 5 },
-                    valid: false,
-                    touched: false
-                },
-                street: {
-                    elementType: 'input',
-                    elementConfig: {
-                        type: 'text',
-                        placeholder: 'Your Street'
-                    },
-                    value: '',
-                    validation: { required: true },
-                    valid: false,
-                    touched: false
-                },
-                city: {
-                    elementType: 'input',
-                    elementConfig: {
-                        type: 'text',
-                        placeholder: 'Your City'
-                    },
-                    value: '',
-                    validation: { required: true },
-                    valid: false,
-                    touched: false
-                },
-                country: {
-                    elementType: 'input',
-                    elementConfig: {
-                        type: 'text',
-                        placeholder: 'Your Country'
-                    },
-                    value: '',
-                    validation: { required: true },
-                    valid: false,
-                    touched: false
-                },
-                email: {
-                    elementType: 'input',
-                    elementConfig: {
-                        type: 'email',
-                        placeholder: 'Your mail'
-                    },
-                    value: '',
-                    validation: { required: true },
-                    valid: false,
-                    touched: false
-                },
-                deliveryMethod: {
-                    elementType: 'select',
-                    elementConfig: {
-                        options: [
-                            { value: 'fastest', displayValue: 'Fastest' },
-                            { value: 'cheapest', displayValue: 'Cheapest' },
-                        ]
-                    },
-                    value: 'cheapest',
-                    touched: false
-                },
+                value: '',
+                validation: { required: true },
+                valid: false,
+                touched: false
             },
-            formIsValid: false
+            zipcode: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Your Zipcode'
+                },
+                value: '',
+                validation: { required: true, minLength: 5, maxLength: 5 },
+                valid: false,
+                touched: false
+            },
+            street: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Your Street'
+                },
+                value: '',
+                validation: { required: true },
+                valid: false,
+                touched: false
+            },
+            city: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Your City'
+                },
+                value: '',
+                validation: { required: true },
+                valid: false,
+                touched: false
+            },
+            country: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Your Country'
+                },
+                value: '',
+                validation: { required: true },
+                valid: false,
+                touched: false
+            },
+            email: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'email',
+                    placeholder: 'Your mail'
+                },
+                value: '',
+                validation: { required: true },
+                valid: false,
+                touched: false
+            },
+            deliveryMethod: {
+                elementType: 'select',
+                elementConfig: {
+                    options: [
+                        { value: 'fastest', displayValue: 'Fastest' },
+                        { value: 'cheapest', displayValue: 'Cheapest' },
+                    ]
+                },
+                value: 'cheapest',
+                touched: false
+            },
         }
-    }
+    );
 
-    orderHandler = (event) => {
+
+    const orderHandler = (event) => {
         event.preventDefault();
         const formData = {};
-        for (let elId in this.state.orderForm) {
-            formData[elId] = this.state.orderForm[elId].value;
+        for (let elId in orderForm) {
+            formData[elId] = orderForm[elId].value;
         }
         const order = {
-            ingredients: this.props.ings,
-            price: this.props.price,
+            ingredients: props.ings,
+            price: props.price,
             orderData: formData,
-            userId: this.props.userId
+            userId: props.userId
         };
-        this.props.onBurgerPurchase(order, this.props.token);
+        props.onBurgerPurchase(order, props.token);
     }
 
-    inputChangedHandler = (event, inputId) => {
-        const updatedInput = updateObject(this.state.orderForm[inputId], {
+    const inputChangedHandler = (event, inputId) => {
+        const updatedInput = updateObject(orderForm[inputId], {
             value: event.target.value,
-            valid: checkValidty(event.target.value, this.state.orderForm[inputId].validation),
+            valid: checkValidty(event.target.value, orderForm[inputId].validation),
             touched: true
         })
-        const updatedForm = updateObject(this.state.orderForm,
+        const updatedForm = updateObject(orderForm,
             {
                 [inputId]: updatedInput
             })
@@ -131,50 +127,46 @@ class ContactData extends Component {
                 formIsValid = formIsValid && updatedForm[key].valid;
             }
         }
-        this.setState({
-            orderForm: updatedForm,
-            formIsValid: formIsValid
-        })
+        setOrderForm(updatedForm);
+        setFormIsValid(formIsValid);
     }
 
-    render() {
-        const formElements = [];
+    const formElements = [];
 
-        for (let key in this.state.orderForm) {
-            formElements.push(
-                {
-                    id: key,
-                    config: this.state.orderForm[key]
-                });
-        }
-        let form = (
-            <form onSubmit={this.orderHandler}>
-                {formElements.map(el => (
-                    <Input
-                        key={el.id}
-                        elementType={el.config.elementType}
-                        elementConfig={el.config.elementConfig}
-                        value={el.config.value}
-                        changed={(event) => this.inputChangedHandler(event, el.id)}
-                        invalid={!el.config.valid}
-                        shouldValidate={el.config.validation}
-                        touched={el.config.touched} />
-                ))}
-                <Button btnType="Success" disabled={!this.state.formIsValid}>ORDER</Button>
-            </form>
-        );
-
-        if (this.props.loading) {
-            form = <Spinner />
-        }
-
-        return (
-            <div className={classes.ContactData}>
-                <h4>Enter your contact data</h4>
-                {form}
-            </div>
-        )
+    for (let key in orderForm) {
+        formElements.push(
+            {
+                id: key,
+                config: orderForm[key]
+            });
     }
+    let form = (
+        <form onSubmit={orderHandler}>
+            {formElements.map(el => (
+                <Input
+                    key={el.id}
+                    elementType={el.config.elementType}
+                    elementConfig={el.config.elementConfig}
+                    value={el.config.value}
+                    changed={(event) => inputChangedHandler(event, el.id)}
+                    invalid={!el.config.valid}
+                    shouldValidate={el.config.validation}
+                    touched={el.config.touched} />
+            ))}
+            <Button btnType="Success" disabled={!formIsValid}>ORDER</Button>
+        </form>
+    );
+
+    if (props.loading) {
+        form = <Spinner />
+    }
+
+    return (
+        <div className={classes.ContactData}>
+            <h4>Enter your contact data</h4>
+            {form}
+        </div>
+    )
 }
 
 const dispatchToProps = dispatch => {
